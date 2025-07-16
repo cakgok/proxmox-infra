@@ -1,0 +1,47 @@
+###############################################################################
+# 1.  Drop the updater script in the expected path
+###############################################################################
+cat >/usr/local/sbin/headscale-selfupdate <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO="juanfont/headscale"
+ARCH="amd64"                     # change if container is arm64
+DATA_DIR="/var/lib/headscale"
+BACKUP_DIR="$DATA_DIR/backups"
+mkdir -p "$BACKUP_DIR"
+
+echo "[headscale‑upd] checking latest release ..."
+ASSET_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest \
+ | jq -r ".assets[] | select(.name|endswith(\"_${ARCH}.deb\")) | .browser_download_url")
+
+[[ -n "$ASSET_URL" ]] || { echo "Cannot find deb URL"; exit 1; }
+
+TMP_DEB=$(mktemp)
+curl -L "$ASSET_URL" -o "$TMP_DEB"
+
+echo "[headscale‑upd] backing up DB ..."
+sqlite3 "$DATA_DIR/db.sqlite" ".backup '$BACKUP_DIR/db-$(date +%F).sqlite'"
+
+echo "[headscale‑upd] installing $ASSET_URL ..."
+dpkg -i "$TMP_DEB"
+
+# deb ≤ 0.26 could disable the service—force‑enable
+systemctl enable --now headscale
+
+rm -f "$TMP_DEB"
+echo "[headscale‑upd] done."
+EOF
+
+###############################################################################
+# 2.  Make it executable and ensure deps are present
+###############################################################################
+chmod +x /usr/local/sbin/headscale-selfupdate
+apt update
+apt install -y jq curl sqlite3
+
+###############################################################################
+# 3.  Test once and inspect the log
+###############################################################################
+systemctl start headscale-update.service
+journalctl -u headscale-update.service --no-pager
