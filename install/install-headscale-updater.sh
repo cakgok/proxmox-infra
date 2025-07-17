@@ -26,7 +26,6 @@ grep -q '^#!/usr/bin/env bash' "$SRC_DIR/headscale-selfupdate" \
 install -m 755 "$SRC_DIR/headscale-selfupdate"       /usr/local/sbin/
 install -m 644 "$SRC_DIR/headscale-update.service"   /etc/systemd/system/
 install -m 644 "$SRC_DIR/headscale-update.timer"     /etc/systemd/system/
-install -D -m 644 "$SRC_DIR/override.conf" /etc/systemd/system/headscale.service.d/override.conf
 
 # --- deps -------------------------------------------------------------------
 apt-get update -qq
