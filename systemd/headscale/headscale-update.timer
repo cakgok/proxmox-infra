@@ -2,8 +2,8 @@
 Description=Weekly Headscale auto‑update
 
 [Timer]
-OnCalendar=Sun *-*-* 03:30:00     # every Sunday 03:30
-Persistent=true                   # catch‑up if the box was off
+OnCalendar=Sun *-*-* 03:30:00
+Persistent=true
 
 [Install]
 WantedBy=timers.target

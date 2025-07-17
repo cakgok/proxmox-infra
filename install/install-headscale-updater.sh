@@ -24,6 +24,7 @@ install -m 755 "$BIN_SRC" /usr/local/sbin/
 # 2. Units
 install -m 644 "$UNIT_SRC_DIR/headscale-update.service" /etc/systemd/system/
 install -m 644 "$UNIT_SRC_DIR/headscale-update.timer"   /etc/systemd/system/
+install -D -m 644 "$UNIT_SRC_DIR/override.conf" /etc/systemd/system/headscale.service.d/override.conf
 
 # 3. Deps (no‑ops if already present)
 apt-get update -qq
