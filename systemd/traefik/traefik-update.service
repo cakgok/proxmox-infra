@@ -1,0 +1,6 @@
+-[Unit]
+Description=Update Traefik to latest stable v3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/traefik-installer.sh
