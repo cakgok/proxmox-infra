@@ -30,7 +30,8 @@ apt-get -y install unattended-upgrades
 systemctl enable --now unattended-upgrades
 
 echo "[bootstrap] masking systemd-logind..."
-systemctl mask --now systemd-logind.service systemd-logind.socket
+systemctl mask --now systemd-logind.service systemd-logind.socket dbus-org.freedesktop.login1.service
+ln -sf /dev/null /usr/share/dbus-1/system-services/org.freedesktop.login1.service
 
 touch "$MARKER"
 echo "[bootstrap] ✓ done."
